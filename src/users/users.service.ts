@@ -6,15 +6,20 @@ import { CreateUserDto } from './dtos/create-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private repo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private readonly repo: Repository<User>,
+  ) {}
 
   create(userDto: CreateUserDto): Promise<User> {
-    const user = this.repo.create({
-      email: userDto.email,
-      password: userDto.password,
-    });
-
-    return this.repo.save(user);
+    try {
+      const user = this.repo.create({
+        email: userDto.email,
+        password: userDto.password,
+      });
+      return this.repo.save(user);
+    } catch (error) {
+      throw new Error('something went wrong');
+    }
   }
 
   async findOne(id: number): Promise<User> {
@@ -24,7 +29,9 @@ export class UsersService {
   }
 
   async find(email: string): Promise<User[]> {
-    return await this.repo.find({ email });
+    const user = await this.repo.find({ email });
+    if (user) return user;
+    else throw new NotFoundException('user not found');
   }
 
   async update(id: number, attrs: Partial<User>): Promise<User> {

@@ -1,3 +1,4 @@
+import { AuthService } from './../users/auth.service';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReportsController } from './reports.controller';
